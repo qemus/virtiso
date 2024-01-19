@@ -65,6 +65,7 @@ jobs:
           cd /tmp/iso
           echo & echo
           # Remove tools for different platforms
+          sudo rm -rf /tmp/iso/i386
           sudo rm -rf /tmp/iso/guest-agent
           sudo rm -f /tmp/iso/virtio-win-gt-x86.msi
           sudo rm -f /tmp/iso/virtio-win-guest-tools.exe
@@ -79,90 +80,28 @@ jobs:
           sudo find /tmp/iso -name *xp* -type d -exec rm -rf {} +
           sudo find /tmp/iso -name *XP* -type d -exec rm -rf {} +
           sudo find /tmp/iso -name *2k8* -type d -exec rm -rf {} +
-          
-          echo & echo
-          find /tmp/iso -name "*86*" -type f
-          find /tmp/iso -name *86* -type d -exec realpath {} \;
           echo & echo
           mkzftree -p 4 --one-filesystem  /tmp/iso /tmp/isoc
           genisoimage -o /tmp/out.iso -r -z -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/isoc
           du -h /tmp/out.iso
           mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
-          klaar
       -
-        name: Checkout
-        if: env.exists == 'false'
-        uses: actions/checkout@v4
+        name: Create artifact
+        uses: actions/upload-artifact@v4
         with:
-          fetch-depth: 0
-      -
-        name: Docker metadata
-        id: meta
-        if: env.exists == 'false'
-        uses: docker/metadata-action@v5
-        with:
-          context: git
-          images: |
-            ${{ secrets.DOCKERHUB_REPO }}
-            ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=latest,priority=100,enable=true
-            type=raw,value=${{ env.latest_tag }}
-          labels: |
-            org.opencontainers.image.title=${{ vars.NAME }}
-        env:
-          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
-      - 
-        name: Set up Docker Buildx
-        if: env.exists == 'false'
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login into Docker Hub
-        if: env.exists == 'false'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Login to GitHub Container Registry
-        if: env.exists == 'false'
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build Docker image
-        if: env.exists == 'false'
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          provenance: false
-          platforms: linux/amd64,linux/arm/v7,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          annotations: ${{ steps.meta.outputs.annotations }}
-          build-args: |
-            VERSION_ARG=${{ steps.meta.outputs.version }}
+          name: virtio-win-${{ env.latest_tag }}.iso
+          path: /tmp/virtio-win-${{ env.latest_tag }}.iso
       -
         name: Create a release
-        if: env.exists == 'false'
         uses: action-pack/github-release@v2
         with:
-          tag: "v${{ steps.meta.outputs.version }}"
-          title: "v${{ steps.meta.outputs.version }}"
+          tag: "v${{ env.latest_tag }}"
+          title: "v${{ env.latest_tag }}"
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
       -
-       name: Send mail
-       if: env.exists == 'false'
-       uses: dawidd6/action-send-mail@v3
-       with:
-         to: ${{secrets.MAILTO}}
-         from: Github Actions <${{secrets.MAILTO}}>
-         connection_url: ${{secrets.MAIL_CONNECTION}}
-         subject: Build of ${{ github.event.repository.name }} v${{ steps.meta.outputs.version }} completed
-         body: |
-              The build job of ${{ github.event.repository.name }} v${{ steps.meta.outputs.version }} was completed successfully! 
-              
-              See https://github.com/${{ github.repository }}/actions for more information.
+        name: Update release
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          files: '/tmp/virtio-win-${{ env.latest_tag }}.iso'
+          release-tag: "v${{ env.latest_tag }}"
+          repo-token: ${{ secrets.REPO_ACCESS_TOKEN }}
