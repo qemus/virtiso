@@ -71,8 +71,8 @@ jobs:
           sudo rm -f /tmp/iso/virtio-win-guest-tools.exe
           #sudo rm -f /tmp/iso/guest-agent/qemu-ga-i386.msi
           # Remove debug symbols
-          sudo find /tmp/iso -name "*.pdb" -type f -delete
-          sudo find /tmp/iso -name "*.PDB" -type f -delete
+          #sudo find /tmp/iso -name "*.pdb" -type f -delete
+          #sudo find /tmp/iso -name "*.PDB" -type f -delete
           # Remove binaries
           sudo find /tmp/iso -name "ARM64" -type d -exec  rm -rf {} +
           sudo find /tmp/iso -name "Arm64" -type d -exec rm -rf {} +
