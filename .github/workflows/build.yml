@@ -66,8 +66,8 @@ jobs:
           find /tmp/iso -name "*.PDB" -type f -delete
           #find . -name "*x86*" -type f
           #find . -name "*i386*" -type f
-          #find . -name "*ARM*" -type f
-          #find . -name "*arm*" -type f
+          find . -name "*ARM*" -type f
+          find . -name "*arm*" -type f
           #find . -name "*386*" -type f
           #find . -name *ARM* -type d -exec realpath {} \;
           #find . -name *arm* -type d -exec realpath {} \;
