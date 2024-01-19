@@ -26,7 +26,9 @@ It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/
 
 # Usage
 
-  This can be used for all AMD64 installations of Windows 7 and up, and Windows Server 2016 and up. It contains every driver the official image has, and even the .MSI installer, so there is zero loss of functionality.
+  This can be used for all AMD64 installations of Windows 7 and up, and Windows Server 2016 and up.
+  
+  It contains every driver the official image has, and even the .MSI installer, so there is zero loss of functionality.
 
 # Disclaimer
 
