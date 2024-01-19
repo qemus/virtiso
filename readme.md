@@ -6,7 +6,7 @@
   
   [![Build](https://github.com/qemus/virtiso/actions/workflows/build.yml/badge.svg)](https://github.com/qemus/virtiso/)
   [![Version](https://img.shields.io/github/v/tag/qemus/virtiso?label=version&sort=semver&color=066da5)](https://github.com/qemus/virtiso/releases)
-  [![Size](https://img.shields.io/badge/size-40.2_MB-steeelblue?style=flat&color=066da5&label=size)](https://github.com/qemus/virtiso/releases)
+  [![Size](https://img.shields.io/badge/size-40.33_MB-steeelblue?style=flat&color=066da5&label=size)](https://github.com/qemus/virtiso/releases)
   
 </div></h1>
 
