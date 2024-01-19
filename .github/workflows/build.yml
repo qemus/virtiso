@@ -82,7 +82,7 @@ jobs:
           
           echo & echo
           find /tmp/iso -name "*86*" -type f
-          find /tmp/iso -name *86* -type d exec realpath {} \;
+          find /tmp/iso -name *86* -type d -exec realpath {} \;
           echo & echo
           mkzftree -p 4 --one-filesystem  /tmp/iso /tmp/isoc
           genisoimage -o /tmp/out.iso -r -z -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/isoc
