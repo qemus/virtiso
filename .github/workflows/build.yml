@@ -63,15 +63,16 @@ jobs:
           rm -rf /tmp/iso && mkdir /tmp/iso
           7z x "/tmp/latest.iso" -o/tmp/iso
           cd /tmp/iso
-          du -a /tmp/iso | sort -n -r | head -n 10
-          find /tmp/iso -type f -exec du -Sh {} + | sort -rh | head -n 10
           echo & echo
           find /tmp/iso -name "*.pdb" -type f -delete
           find /tmp/iso -name "*.PDB" -type f -delete
+          du -a /tmp/iso | sort -n -r | head -n 10
+          du -a /tmp/NetKVM | sort -n -r | head -n 10
+          find /tmp/iso -type f -exec du -Sh {} + | sort -rh | head -n 10
           #find . -name "*x86*" -type f
           #find . -name "*i386*" -type f
-          find . -name "*ARM*" -type d
-          find . -name "*arm*" -type d
+          find /tmp/iso -name "*ARM*" -type d
+          find /tmp/iso -name "*arm*" -type d
           #find . -name "*386*" -type f
           #find . -name *ARM* -type d -exec realpath {} \;
           #find . -name *arm* -type d -exec realpath {} \;
