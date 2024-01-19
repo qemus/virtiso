@@ -58,7 +58,7 @@ jobs:
         run: |
           #!/bin/bash
           strip="n"
-          sudo apt install genisoimage bsdtar
+          sudo apt install genisoimage libarchive-tools
           rm -f /tmp/latest.iso
           wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q  
           rm -rf /tmp/iso && mkdir /tmp/iso
