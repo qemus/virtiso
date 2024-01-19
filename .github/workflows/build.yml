@@ -51,18 +51,17 @@ jobs:
           else
            echo "exists=false" >> $GITHUB_ENV
           fi
-      - 
-        name: Install dependencies
-        if: env.exists == 'false'
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: 7zip genisoimage
       -
         name: Build minified ISO
         if: env.exists == 'false'
         id: version
         run: |
           #!/bin/bash
+           wget http://fuz.su/pub/schilytools/schily-2023-04-19.tar.bz2
+           tar xf schily-2023-04-19.tar.bz2
+           cd schily-2023-04-19
+           make
+           sudo make install
           rm -f /tmp/latest.iso
           wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q  
           rm -rf /tmp/iso && mkdir /tmp/iso
