@@ -22,7 +22,7 @@ jobs:
         name: Get latest tag
         run: |
           #!/bin/bash
-          latest_tag="0.1.240"
+          latest_tag="0.1.240" # Temporary fix
           [ -z "$latest_tag" ] && echo "Tag not found!" && exit 1
           [[ "$latest_tag" == "null" ]] && echo "Tag not found!" && exit 1
           [[ "$latest_tag" = v* ]] && latest_tag="${latest_tag:1}"
@@ -57,7 +57,7 @@ jobs:
         id: version
         run: |
           #!/bin/bash
-          strip="n"
+          strip="y"
           sudo apt install genisoimage libarchive-tools
           rm -f /tmp/latest.iso
           wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q  
