@@ -72,11 +72,11 @@ jobs:
           sudo find /tmp/iso -name "*.pdb" -type f -delete
           sudo find /tmp/iso -name "*.PDB" -type f -delete
           # Remove ARM64 binaries
-          sudo find /tmp/iso -name "*ARM64*" -type d -exec  rm -rf {} \;
-          sudo find /tmp/iso -name "*Arm64*" -type d -exec rm -rf {} \;
-          sudo find /tmp/iso -name "*arm64*" -type d -exec rm -rf {} \;
-          sudo find /tmp/iso -name *xp* -type d -exec rm -rf {} \;
-          sudo find /tmp/iso -name *XP* -type d -exec rm -rf {} \;
+          sudo find /tmp/iso -name "*ARM64*" -type d -exec  rm -rf {} +
+          sudo find /tmp/iso -name "*Arm64*" -type d -exec rm -rf {} +
+          sudo find /tmp/iso -name "*arm64*" -type d -exec rm -rf {} +
+          sudo find /tmp/iso -name *xp* -type d -exec rm -rf {} +
+          sudo find /tmp/iso -name *XP* -type d -exec rm -rf {} +
           
           du -a /tmp/iso | sort -n -r | head -n 10
           du -a /tmp/iso/NetKVM | sort -n -r | head -n 10
