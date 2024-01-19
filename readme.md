@@ -23,3 +23,7 @@ It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/
   - Removed support for Windows Server 2003
   - Removed support for Windows Server 2008
   - Removed support for Windows Server 2012
+
+# Usage
+
+  This can be used for all AMD64 installations of Windows 7 and up, and Windows Server 2016 and up. It contains every driver the official image has, and even the .MSI installer, so there is zero loss of functionality.
