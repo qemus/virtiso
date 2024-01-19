@@ -65,9 +65,10 @@ jobs:
           cd /tmp/iso
           echo & echo
           # Remove tools for different platforms
+          sudo rm -rf /tmp/iso/guest-agent
           sudo rm -f /tmp/iso/virtio-win-gt-x86.msi
           sudo rm -f /tmp/iso/virtio-win-guest-tools.exe
-          sudo rm -f /tmp/iso/guest-agent/qemu-ga-i386.msi
+          #sudo rm -f /tmp/iso/guest-agent/qemu-ga-i386.msi
           # Remove debug symbols
           sudo find /tmp/iso -name "*.pdb" -type f -delete
           sudo find /tmp/iso -name "*.PDB" -type f -delete
@@ -77,16 +78,10 @@ jobs:
           sudo find /tmp/iso -name "*arm64*" -type d -exec rm -rf {} +
           sudo find /tmp/iso -name *xp* -type d -exec rm -rf {} +
           sudo find /tmp/iso -name *XP* -type d -exec rm -rf {} +
+          sudo find /tmp/iso -name *2k8* -type d -exec rm -rf {} +
           
-          du -a /tmp/iso | sort -n -r | head -n 10
-          du -a /tmp/iso/NetKVM | sort -n -r | head -n 10
-          find /tmp/iso -type f -exec du -Sh {} + | sort -rh | head -n 10
+          echo & echo
           find /tmp/iso -name "*86*" -type f
-          find /tmp/iso -name "*386*" -type f
-
-          find /tmp/iso -name "*386*" -type f
-          find /tmp/iso -name *xp* -type d -exec realpath {} \;
-          find /tmp/iso -name *win2k* -type d -exec realpath {} \;
           find /tmp/iso -name *86* -type d exec realpath {} \;
           echo & echo
           mkzftree -p 4 --one-filesystem  /tmp/iso /tmp/isoc
