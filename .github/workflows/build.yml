@@ -86,7 +86,7 @@ jobs:
           sudo find /tmp/iso -name "*2k12*" -type d -exec rm -rf {} +
           echo & echo
           #mkzftree -z 9 -p 4 --one-filesystem  /tmp/iso /tmp/isoc
-          genisoimage -o /tmp/out.iso -r -z -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
+          genisoimage -o /tmp/out.iso -r -z -iso-level 4 -no-pad -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
           mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
       -
         name: Checkout
