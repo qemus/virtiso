@@ -85,8 +85,8 @@ jobs:
           sudo find /tmp/iso -name "*2k8*" -type d -exec rm -rf {} +
           sudo find /tmp/iso -name "*2k12*" -type d -exec rm -rf {} +
           echo & echo
-          mkzftree -p 4 --one-filesystem  /tmp/iso /tmp/isoc
-          genisoimage -o /tmp/out.iso -r -z -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/isoc
+          #mkzftree -p 4 --one-filesystem  /tmp/iso /tmp/isoc
+          genisoimage -o /tmp/out.iso -r -z -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
           du -h /tmp/out.iso
           mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
       -
