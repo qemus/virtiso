@@ -86,13 +86,21 @@ jobs:
           du -h /tmp/out.iso
           mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
       -
+        name: Checkout
+        if: env.exists == 'false'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      -
         name: Create artifact
+        if: env.exists == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: virtio-win-${{ env.latest_tag }}.iso
           path: /tmp/virtio-win-${{ env.latest_tag }}.iso
       -
         name: Create a release
+        if: env.exists == 'false'
         uses: action-pack/github-release@v2
         with:
           tag: "v${{ env.latest_tag }}"
@@ -100,6 +108,7 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
       -
         name: Update release
+        if: env.exists == 'false'
         uses: AButler/upload-release-assets@v3.0
         with:
           files: '/tmp/virtio-win-${{ env.latest_tag }}.iso'
