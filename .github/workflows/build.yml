@@ -63,7 +63,6 @@ jobs:
           wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q  
           rm -rf /tmp/iso && mkdir /tmp/iso
           bsdtar -xf "/tmp/latest.iso" -C /tmp/iso/
-          #7z x "/tmp/latest.iso" -o/tmp/iso
           cd /tmp/iso
           echo & echo
           if [[ ${strip,,} == "y" ]]; then
