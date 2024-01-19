@@ -61,7 +61,21 @@ jobs:
           wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q  
           rm -rf /tmp/iso && mkdir /tmp/iso
           7z x "/tmp/latest.iso" -o/tmp/iso
-          
+          #find /tmp/iso -name "*.pdb" -type f -delete
+          #find /tmp/iso -name "*.PDB" -type f -delete
+          #find . -name "*x86*" -type f
+          #find . -name "*i386*" -type f
+          #find . -name "*ARM*" -type f
+          #find . -name "*arm*" -type f
+          #find . -name "*386*" -type f
+          #find . -name *ARM* -type d -exec realpath {} \;
+          #find . -name *arm* -type d -exec realpath {} \;
+          #find . -name *xp* -type d -exec realpath {} \;
+          #find . -name *win2k* -type d -exec realpath {} \;
+          #find . -name *a* -type d -exec rm  -rf {} \;
+          mkisofs -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
+          du -h /tmp/out.iso
+          mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
       -
         name: Checkout
         if: env.exists == 'false'
