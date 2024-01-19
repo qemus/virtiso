@@ -12,7 +12,7 @@
 
 This repository contains a minimal image of the KVM/QEMU Virtio drivers for Windows guests.
 
-It minimizes the standard ISO of 600 MB to just 40 MB in size.
+It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/) of 600 MB to just 40 MB in size.
 
 # Methods used
 
