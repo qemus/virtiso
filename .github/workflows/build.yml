@@ -57,11 +57,13 @@ jobs:
         id: version
         run: |
           #!/bin/bash
-           wget http://fuz.su/pub/schilytools/schily-2023-04-19.tar.bz2
-           tar xf schily-2023-04-19.tar.bz2
+           wget http://fuz.su/pub/schilytools/schily-2023-04-19.tar.bz2 -O "/tmp/schily.tar.bz2" -q 
+           cd /tmp
+           tar xf schily.tar.bz2
            cd schily-2023-04-19
-           make
-           sudo make install
+           make --quiet
+           sudo make install --quiet
+           cd
           rm -f /tmp/latest.iso
           wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q  
           rm -rf /tmp/iso && mkdir /tmp/iso
@@ -78,7 +80,7 @@ jobs:
           #find . -name *xp* -type d -exec realpath {} \;
           #find . -name *win2k* -type d -exec realpath {} \;
           #find . -name *a* -type d -exec rm  -rf {} \;
-          genisoimage -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
+          /opt/schily/mkisofs -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
           du -h /tmp/out.iso
           mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
       -
