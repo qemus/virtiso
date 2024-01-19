@@ -62,8 +62,8 @@ jobs:
           wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q  
           rm -rf /tmp/iso && mkdir /tmp/iso
           7z x "/tmp/latest.iso" -o/tmp/iso
-          #find /tmp/iso -name "*.pdb" -type f -delete
-          #find /tmp/iso -name "*.PDB" -type f -delete
+          find /tmp/iso -name "*.pdb" -type f -delete
+          find /tmp/iso -name "*.PDB" -type f -delete
           #find . -name "*x86*" -type f
           #find . -name "*i386*" -type f
           #find . -name "*ARM*" -type f
