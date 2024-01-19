@@ -79,7 +79,7 @@ jobs:
           #find . -name *xp* -type d -exec realpath {} \;
           #find . -name *win2k* -type d -exec realpath {} \;
           #find . -name *a* -type d -exec rm  -rf {} \;
-          mkisofs -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
+          genisoimage -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
           du -h /tmp/out.iso
           mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
       -
