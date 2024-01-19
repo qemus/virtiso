@@ -51,6 +51,12 @@ jobs:
           else
            echo "exists=false" >> $GITHUB_ENV
           fi
+      - 
+        name: Install dependencies
+        if: env.exists == 'false'
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: 7zip genisoimage
       -
         name: Build minified ISO
         if: env.exists == 'false'
