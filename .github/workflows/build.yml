@@ -57,7 +57,8 @@ jobs:
         id: version
         run: |
           #!/bin/bash
-          jdjsnnsmsms
+          wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso"
+          7z -x "virtio-win-${{ env.latest_tag }}.iso"
           
       -
         name: Checkout
