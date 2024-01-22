@@ -24,7 +24,7 @@ jobs:
           #!/bin/bash
           url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/"
           resp=$(curl $url)
-          latest_tag=echo "$resp" | grep -o 'href="[^"]*' | tail -c +98 | sed 's/...$//'
+          latest_tag=$(echo "$resp" | grep -o 'href="[^"]*' | tail -c +98 | sed 's/...$//')
           [ -z "$latest_tag" ] && echo "Tag not found!" && exit 1
           [[ "$latest_tag" = v* ]] && latest_tag="${latest_tag:1}"
           echo "Found tag: \"${latest_tag}\""
