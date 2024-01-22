@@ -23,7 +23,7 @@ jobs:
         run: |
           #!/bin/bash
           url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/"
-          resp=$(curl $url)
+          resp=$(curl -sS $url)
           latest_tag=$(echo "$resp" | grep -o 'href="[^"]*' | tail -c +98 | sed 's/...$//')
           [ -z "$latest_tag" ] && echo "Tag not found!" && exit 1
           [[ "$latest_tag" = v* ]] && latest_tag="${latest_tag:1}"
@@ -34,7 +34,7 @@ jobs:
         uses: action-pack/tag-exists@v1
         id: checkTag
         with: 
-          tag: 'v${{ env.latest_tag }}'         
+          tag: 'xv${{ env.latest_tag }}'         
       -
         name: Finish when found
         run: |
