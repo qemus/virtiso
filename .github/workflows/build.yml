@@ -34,7 +34,7 @@ jobs:
         uses: action-pack/tag-exists@v1
         id: checkTag
         with: 
-          tag: 'xv${{ env.latest_tag }}'         
+          tag: 'v${{ env.latest_tag }}'         
       -
         name: Finish when found
         run: |
@@ -44,7 +44,7 @@ jobs:
             exit 0
           fi
           loc="${{ env.latest_tag }}"
-          url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-winx-${loc}-1"
+          url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${loc}-1"
           echo "Checking if ${url} exists.."
           resp=$(curl -I 2>/dev/null $url | head -1)
           if echo $resp | grep 404 >/dev/null; then
