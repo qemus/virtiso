@@ -19,7 +19,6 @@ It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/
   - Stripped ARM64/i386/x86 drivers
   - Stripped all .PDB (debug symbol) files
   - Stripped Guest Agent and Guest Tools
-  - Removed support for Windows XP
   - Removed support for Windows Server 2003
   - Removed support for Windows Server 2008
   - Removed support for Windows Server 2012
