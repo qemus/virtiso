@@ -82,9 +82,6 @@ jobs:
             sudo find /tmp/iso -name "arm64" -type d -exec rm -rf {} +
             sudo find /tmp/iso -name "x86" -type d -exec rm -rf {} +
             sudo find /tmp/iso -name "X86" -type d -exec rm -rf {} +
-            sudo find /tmp/iso -name "*2k3*" -type d -exec rm -rf {} +
-            sudo find /tmp/iso -name "*2k8*" -type d -exec rm -rf {} +
-            sudo find /tmp/iso -name "*2k12*" -type d -exec rm -rf {} +
           fi
           echo & echo
           genisoimage -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
