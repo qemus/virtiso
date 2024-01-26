@@ -12,20 +12,17 @@
 
 Virtiso is a slim image of the KVM/QEMU Virtio drivers for Windows guests.
 
-It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/) of 600 MB to under 25 MB in size.
+It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/) of 600 MB to 25 MB in size.
 
 # Methods used
 
   - Stripped ARM64/i386/x86 drivers
   - Stripped all .PDB (debug symbol) files
   - Stripped Guest Agent and Guest Tools
-  - Removed support for Windows Server 2003
-  - Removed support for Windows Server 2008
-  - Removed support for Windows Server 2012
 
 # Usage
 
-  This can be used for all AMD64 installations of Windows 7 and up, and Windows Server 2016 and up.
+  This can be used for all AMD64 installations of Windows XP and up, and Windows Server 2008 and up.
   
   It contains every driver the official image has, and even the .MSI installer, so there is zero loss of functionality.
 
