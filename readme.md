@@ -24,7 +24,7 @@ It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/
 
   This can be used for all AMD64 installations of Windows XP and up, and Windows Server 2003 and up.
   
-  It contains every driver the official image has, and even the .MSI installer, so there is zero loss of functionality.
+  It contains every AMD64 driver the official image has, and even the .MSI installer, so there is zero loss of functionality.
 
 # Disclaimer
 
