@@ -77,17 +77,17 @@ jobs:
             sudo find /tmp/iso -name "*.pdb" -type f -delete
             sudo find /tmp/iso -name "*.PDB" -type f -delete
             # Exlcude XP x86 drivers
-            #mv /tmp/iso/NetKVM/xp/x86 /tmp/iso/NetKVM/xp/z86
-            #mv /tmp/iso/viostor/xp/x86 /tmp/iso/viostor/xp/z86
+            mv /tmp/iso/NetKVM/xp/x86 /tmp/iso/NetKVM/xp/z86
+            mv /tmp/iso/viostor/xp/x86 /tmp/iso/viostor/xp/z86
             # Remove binaries
             sudo find /tmp/iso -name "ARM64" -type d -exec  rm -rf {} +
             sudo find /tmp/iso -name "Arm64" -type d -exec rm -rf {} +
             sudo find /tmp/iso -name "arm64" -type d -exec rm -rf {} +
-            #sudo find /tmp/iso -name "x86" -type d -exec rm -rf {} +
-            #sudo find /tmp/iso -name "X86" -type d -exec rm -rf {} +
-            # Include XP x86 drivers
-            #mv /tmp/iso/NetKVM/xp/z86 /tmp/iso/NetKVM/xp/n86
-            #mv /tmp/iso/viostor/xp/z86 /tmp/iso/viostor/xp/n86
+            sudo find /tmp/iso -name "x86" -type d -exec rm -rf {} +
+            sudo find /tmp/iso -name "X86" -type d -exec rm -rf {} +
+            # Include some XP x86 drivers
+            mv /tmp/iso/NetKVM/xp/z86 /tmp/iso/NetKVM/xp/n86
+            mv /tmp/iso/viostor/xp/z86 /tmp/iso/viostor/xp/n86
           fi
           echo & echo
           genisoimage -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
