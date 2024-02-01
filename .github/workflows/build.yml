@@ -93,9 +93,9 @@ jobs:
           wget "https://downloadmirror.intel.com/23295/eng/f6flpy-x86_11.2.0.1006.zip" -O "/tmp/satax86.zip" -q
           wget "https://downloadmirror.intel.com/23295/eng/f6flpy-x64_11.2.0.1006.zip" -O "/tmp/satax64.zip" -q
           mkdir -p /tmp/iso/sata/xp/x86
-          mkdir -p /tmp/iso/sata/xp/x64
+          mkdir -p /tmp/iso/sata/xp/amd64
           unzip /tmp/satax86.zip -d /tmp/iso/sata/xp/x86
-          unzip /tmp/satax64.zip -d /tmp/iso/sata/xp/x64
+          unzip /tmp/satax64.zip -d /tmp/iso/sata/xp/amd64
           echo & echo
           genisoimage -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
           mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
