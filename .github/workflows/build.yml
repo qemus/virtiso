@@ -61,7 +61,7 @@ jobs:
           strip="y"
           sudo apt install genisoimage libarchive-tools
           rm -f /tmp/latest.iso
-          wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q  
+          wget "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}-1/virtio-win-${{ env.latest_tag }}.iso" -O "/tmp/latest.iso" -q
           rm -rf /tmp/iso && mkdir /tmp/iso
           bsdtar -xf "/tmp/latest.iso" -C /tmp/iso/
           cd /tmp/iso
@@ -89,6 +89,13 @@ jobs:
             sudo mv /tmp/iso/NetKVM/xp/z86 /tmp/iso/NetKVM/xp/x86
             sudo mv /tmp/iso/viostor/xp/z86 /tmp/iso/viostor/xp/x86
           fi
+          echo & echo
+          wget "https://downloadmirror.intel.com/23295/eng/f6flpy-x86_11.2.0.1006.zip" -O "/tmp/satax86.zip" -q
+          wget "https://downloadmirror.intel.com/23295/eng/f6flpy-x64_11.2.0.1006.zip" -O "/tmp/satax64.zip" -q
+          mkdir -p /tmp/iso/sata/xp/x86
+          mkdir -p /tmp/iso/sata/xp/x64
+          unzip /tmp/satax86.zip -d /tmp/iso/sata/xp/x86
+          unzip /tmp/satax64.zip -d /tmp/iso/sata/xp/x64
           echo & echo
           genisoimage -o /tmp/out.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_tag }}" /tmp/iso
           mv /tmp/out.iso /tmp/virtio-win-${{ env.latest_tag }}.iso
