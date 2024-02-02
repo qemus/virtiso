@@ -88,6 +88,8 @@ jobs:
             # Include some XP x86 drivers
             sudo mv /tmp/iso/NetKVM/xp/z86 /tmp/iso/NetKVM/xp/x86
             sudo mv /tmp/iso/viostor/xp/z86 /tmp/iso/viostor/xp/x86
+            # Remove empty directories
+            sudo find . -type d -empty -delete
           fi
           echo & echo
           wget "https://downloadmirror.intel.com/23295/eng/f6flpy-x86_11.2.0.1006.zip" -O "/tmp/satax86.zip" -q
