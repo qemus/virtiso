@@ -26,6 +26,8 @@ It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/
   
   It contains every AMD64 driver the official image has, and even the .MSI installer, so there is zero loss of functionality.
 
+  See also [Virtiso x86](https://github.com/qemus/virtiso-x86/) if you need 32-bit drivers and [Virtiso ARM](https://github.com/qemus/virtiso-arm/) for the ARM drivers.
+
 # Disclaimer
 
   This project contains binaries provided by Red Hat, Inc. and/or its affiliates.
