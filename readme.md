@@ -28,6 +28,9 @@ It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/
 
   See also [Virtiso x86](https://github.com/qemus/virtiso-x86/) if you need x86 drivers and [Virtiso ARM](https://github.com/qemus/virtiso-arm/) for ARM64 drivers.
 
+# Stars
+[![Stars](https://starchart.cc/qemus/virtiso.svg?variant=adaptive)](https://starchart.cc/qemus/virtiso)
+
 # Disclaimer
 
   This project contains binaries provided by Red Hat, Inc. and/or its affiliates.
