@@ -138,8 +138,8 @@ jobs:
          to: ${{secrets.MAILTO}}
          from: Github Actions <${{secrets.MAILTO}}>
          connection_url: ${{secrets.MAIL_CONNECTION}}
-         subject: Build of ${{ github.event.repository.name }} v${{ steps.meta.outputs.version }} completed
+         subject: Build of ${{ github.event.repository.name }} v${{ env.latest_tag }} completed
          body: |
-              The build job of ${{ github.event.repository.name }} v${{ steps.meta.outputs.version }} was completed successfully! 
+              The build job of ${{ github.event.repository.name }} v${{ env.latest_tag }} was completed successfully! 
               
               See https://github.com/${{ github.repository }}/actions for more information.
