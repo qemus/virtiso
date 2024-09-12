@@ -58,54 +58,11 @@ jobs:
         id: fedora
         run: |
           #!/bin/bash
-          sudo apt install genisoimage libarchive-tools
+          sudo apt install rdfind genisoimage libarchive-tools
           url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}/virtio-win-$base.iso"
           wget "$url" -O "/tmp/latest.iso" -q
           rm -rf /tmp/iso && mkdir /tmp/iso
           bsdtar -xf "/tmp/latest.iso" -C /tmp/iso/
-      -
-        name: Add signed drivers for Win8/Win2012
-        if: env.exists == 'false'
-        id: signed
-        run: |
-          #!/bin/bash
-          function create_links () {
-            local source="$1"
-            local target="$2"
-            sudo cp -pr "$source" "$target"
-            cd "$target"
-            sudo cp -lpr w8.1 w8
-            sudo cp -lpr w8.1 2k12
-            sudo cp -lpr w8.1 2k12R2
-            return 0
-          }
-          cd /tmp/iso
-          sudo find /tmp/iso -iname "w8" -type d -exec rm -rf {} +
-          sudo find /tmp/iso -iname "w8.1" -type d -exec rm -rf {} +
-          sudo find /tmp/iso -iname "2k12" -type d -exec rm -rf {} +
-          sudo find /tmp/iso -iname "2k12R2" -type d -exec rm -rf {} +
-          old_version="0.1.215"
-          url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-$old_version-2/virtio-win-$old_version.iso"
-          wget "$url" -O "/tmp/old.iso" -q
-          rm -rf /tmp/old && mkdir /tmp/old
-          bsdtar -xf "/tmp/old.iso" -C /tmp/old/
-          create_links "/tmp/old/viogpudo/w8.1" "/tmp/iso/viogpudo"
-          curl --show-error --fail --silent "https://download.rockylinux.org/pub/rocky/9/devel/x86_64/os/Packages/v/" --output /tmp/package.html
-          pkg=$(grep '<a href="virtio-win' /tmp/package.html)
-          latest_rpm=$(echo "$pkg" | cut -c 10- | cut -d '"' -f1)
-          url="https://download.rockylinux.org/pub/rocky/9/devel/x86_64/os/Packages/v/$latest_rpm"
-          wget "$url" -O "/tmp/latest.rpm" -q
-          rm -rf /tmp/rpm && mkdir /tmp/rpm
-          cd /tmp/rpm
-          rpm2cpio /tmp/latest.rpm | cpio -idmv 2> /dev/null
-          cp -L /tmp/rpm/usr/share/virtio-win/virtio-win.iso /tmp/rocky.iso
-          rm -rf /tmp/rocky && mkdir /tmp/rocky
-          bsdtar -xf "/tmp/rocky.iso" -C /tmp/rocky/
-          create_links "/tmp/rocky/amd64/w8.1" "/tmp/iso/amd64"
-          create_links "/tmp/rocky/viorng/w8.1" "/tmp/iso/viorng"
-          create_links "/tmp/rocky/viostor/w8.1" "/tmp/iso/viostor"
-          create_links "/tmp/rocky/vioscsi/w8.1" "/tmp/iso/vioscsi"
-          create_links "/tmp/rocky/NetKVM/w8.1" "/tmp/iso/NetKVM"
       -
         name:  Strip unnecessary bloat
         if: env.exists == 'false'
@@ -124,17 +81,20 @@ jobs:
           # Remove binaries for other platforms
           sudo find /tmp/iso -iname "x86" -type d -exec rm -rf {} +
           sudo find /tmp/iso -iname "arm64" -type d -exec rm -rf {} +
+          # Remove Win8/Win2012 drivers
+          sudo find /tmp/iso -iname "w8" -type d -exec rm -rf {} +
+          sudo find /tmp/iso -iname "w8.1" -type d -exec rm -rf {} +
+          sudo find /tmp/iso -iname "2k12" -type d -exec rm -rf {} +
+          sudo find /tmp/iso -iname "2k12R2" -type d -exec rm -rf {} +
           # Remove empty directories
           sudo find . -type d -empty -delete
       -
-        name: Add some x86 drivers for XP/Vista/Win7
+        name: Create symbolic links
         if: env.exists == 'false'
-        id: legacy
+        id: symlinks
         run: |
           #!/bin/bash
-          url="https://github.com/qemus/virtiso/releases/download/v0.1.240/legacy.zip"
-          wget "$url" -O "/tmp/legacy.zip" -q
-          sudo unzip /tmp/legacy.zip -d /tmp/iso >/dev/null
+          sudo rdfind -makehardlinks true /tmp/iso/
       -
         name: Build minified ISO
         if: env.exists == 'false'
