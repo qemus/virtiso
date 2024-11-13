@@ -58,7 +58,7 @@ jobs:
         id: fedora
         run: |
           #!/bin/bash
-          sudo apt install rdfind genisoimage libarchive-tools
+          sudo apt install rdfind genisoimage libarchive-tools symlinks
           url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}/virtio-win-$base.iso"
           wget "$url" -O "/tmp/latest.iso" -q
           rm -rf /tmp/iso && mkdir /tmp/iso
@@ -94,7 +94,8 @@ jobs:
         id: symlinks
         run: |
           #!/bin/bash
-          sudo rdfind -makehardlinks true /tmp/iso/
+          sudo rdfind -removeidentinode false -makehardlinks true /tmp/iso/
+          symlinks -orc /tmp/iso
       -
         name: Build minified ISO
         if: env.exists == 'false'
