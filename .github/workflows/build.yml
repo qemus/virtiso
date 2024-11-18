@@ -59,7 +59,7 @@ jobs:
         run: |
           #!/bin/bash
           sudo apt install rdfind genisoimage libarchive-tools symlinks
-          url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}/virtio-win-$base.iso"
+          url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}/virtio-win-${{ env.latest_base }}.iso"
           echo "Downloading $url"
           wget "$url" -O "/tmp/latest.iso" -q
           rm -rf /tmp/iso && mkdir /tmp/iso
