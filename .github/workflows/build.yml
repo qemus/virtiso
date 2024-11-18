@@ -82,11 +82,6 @@ jobs:
           # Remove binaries for other platforms
           sudo find /tmp/iso -iname "x86" -type d -exec rm -rf {} +
           sudo find /tmp/iso -iname "arm64" -type d -exec rm -rf {} +
-          # Remove Win8/Win2012 drivers
-          sudo find /tmp/iso -iname "w8" -type d -exec rm -rf {} +
-          sudo find /tmp/iso -iname "w8.1" -type d -exec rm -rf {} +
-          sudo find /tmp/iso -iname "2k12" -type d -exec rm -rf {} +
-          sudo find /tmp/iso -iname "2k12R2" -type d -exec rm -rf {} +
           # Remove empty directories
           sudo find . -type d -empty -delete
       -
