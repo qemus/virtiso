@@ -106,7 +106,7 @@ jobs:
           cd /tmp/iso
           genisoimage -o /tmp/virtio-win-${{ env.latest_base }}.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_base }}" /tmp/iso
           sudo rm /tmp/iso/*.msi
-          sudo rm /tmp/iso/*.exe          
+          #sudo rm /tmp/iso/*.exe          
           echo & echo
           tar -C /tmp/iso -cvzf /tmp/virtio-win-${{ env.latest_base }}.tar.gz * >/dev/null
           echo & echo
