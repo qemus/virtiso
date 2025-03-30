@@ -117,6 +117,7 @@ jobs:
         if: env.exists == 'false'
         uses: action-pack/github-release@v2
         with:
+          body: " "
           tag: "v${{ env.latest_tag }}"
           title: "v${{ env.latest_base }}"
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
