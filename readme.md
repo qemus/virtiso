@@ -22,7 +22,7 @@ It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/
 
 # Download
 
-  You can download the [latest version](https://github.com/qemus/virtiso/releases/download/v0.1.266-1/virtio-win-0.1.266.iso) from the [Releases](https://github.com/qemus/virtiso/releases) page.
+  You can download the [latest version](https://github.com/qemus/virtiso/releases/download/v0.1.271-1/virtio-win-0.1.271.iso) from the [Releases](https://github.com/qemus/virtiso/releases) page.
 
 # Usage 🚀
   
