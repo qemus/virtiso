@@ -124,7 +124,7 @@ jobs:
       -
         name: Update release
         if: env.exists == 'false'
-        uses: AButler/upload-release-assets@v3.0
+        uses: AButler/upload-release-assets@v4.0
         with:
           files: '/tmp/virtio-win-${{ env.latest_base }}.*'
           release-tag: "v${{ env.latest_tag }}"
