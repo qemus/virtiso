@@ -32,7 +32,7 @@ It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/
 > See also [VirtISO WHQL](https://github.com/qemus/virtiso-whql/) for the WHQL certified drivers, [VirtISO x86](https://github.com/qemus/virtiso-x86/) for x86 drivers and [VirtISO ARM](https://github.com/qemus/virtiso-arm/) for ARM64 drivers.
 
 ## Stars 🌟
-[![Stargazers](https://raw.githubusercontent.com/star-stats/stars/refs/heads/data/charts/qemus-virtiso.svg)](https://github.com/dobtc/qemus/virtiso)
+[![Stargazers](https://raw.githubusercontent.com/star-stats/stars/refs/heads/data/charts/qemus-virtiso.svg)](https://github.com/qemus/virtiso/stargazers)
 
 # Disclaimer ⚖️
 
