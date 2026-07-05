@@ -12,13 +12,15 @@
 
 VirtISO is a slim image of the VirtIO drivers for Windows guests as provided by Fedora.
 
-It minimizes the [official ISO](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/) from 700 MB to just 25 MB in size.
+## Features ✨
 
-# Features ✨
-
-  - Stripped all x86/i386/ARM64 drivers
-  - Stripped all .PDB (debug symbol) files
-  - Stripped Guest Agent and Guest Tools
+- Provides a slim VirtIO drivers ISO for Windows guests
+- Based on the [Fedora](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/) VirtIO driver image
+- Reduces the official ISO from about 700 MB to about 25 MB
+- Includes only 64-bit Windows drivers
+- Removes x86, i386, and ARM64 drivers
+- Removes debug symbol files
+- Removes Guest Agent and Guest Tools
 
 # Download
 
