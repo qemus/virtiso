@@ -176,6 +176,264 @@ jobs:
           find /tmp/iso -depth -type d -empty -delete
           EOF
       -
+        name: Generate release notes
+        if: env.exists == 'false'
+        id: notes
+        env:
+          LATEST_TAG: ${{ env.latest_tag }}
+        run: |
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          changelog_url="https://fedorapeople.org/groups/virt/virtio-win/CHANGELOG"
+
+          curl -fsS "$changelog_url" -o /tmp/CHANGELOG
+
+          python3 <<'PY'
+          import json
+          import os
+          import re
+          from collections import defaultdict
+          from pathlib import Path
+
+          iso_root = Path("/tmp/iso")
+          info_file = iso_root / "data/info.json"
+          changelog_file = Path("/tmp/CHANGELOG")
+          output_file = Path("/tmp/release-notes.md")
+          latest_tag = os.environ["LATEST_TAG"]
+
+          if not info_file.is_file():
+              raise SystemExit(
+                  "ERROR: data/info.json was not found in the ISO."
+              )
+
+          if not changelog_file.is_file():
+              raise SystemExit(
+                  "ERROR: Fedora changelog was not downloaded."
+              )
+
+          changelog = changelog_file.read_text(
+              encoding="utf-8",
+              errors="replace",
+          )
+
+          changelog = changelog.replace("\r\n", "\n").replace("\r", "\n")
+          changelog = re.sub(
+              r"^\s*%changelog\s*",
+              "",
+              changelog,
+          )
+
+          entries = [
+              entry.strip()
+              for entry in re.split(
+                  r"(?=^\*[ \t])",
+                  changelog,
+                  flags=re.MULTILINE,
+              )
+              if entry.strip()
+          ]
+
+          selected_entry = ""
+
+          for entry in entries:
+              if re.search(
+                  rf"(?:^|[ \t-]){re.escape(latest_tag)}(?:\s|$)",
+                  entry,
+              ):
+                  selected_entry = entry
+                  break
+
+          if not selected_entry and entries:
+              selected_entry = entries[0]
+
+          selected_entry = re.sub(
+              r"^\*[ \t]*",
+              "",
+              selected_entry,
+          ).strip()
+
+          header = ""
+          details = []
+
+          if selected_entry:
+              lines = selected_entry.splitlines()
+              header = lines[0].strip()
+
+              for line in lines[1:]:
+                  line = line.strip()
+
+                  if not line:
+                      continue
+
+                  details.append(
+                      re.sub(r"^-[ \t]*", "", line)
+                  )
+
+          header_match = re.match(
+              r"(?P<date>(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+"
+              r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+"
+              r"\d{1,2}\s+\d{4})\s+"
+              r"(?P<author>.+?)\s+-\s+"
+              r"(?P<version>\S+)\s*$",
+              header,
+          )
+
+          windows_names = {
+              "2k25": "Windows Server 2025",
+              "w11": "Windows 11",
+              "2k22": "Windows Server 2022",
+              "2k19": "Windows Server 2019",
+              "2k16": "Windows Server 2016",
+              "w10": "Windows 10",
+              "2k12R2": "Windows Server 2012 R2",
+              "w8.1": "Windows 8.1",
+              "2k12": "Windows Server 2012",
+              "w8": "Windows 8",
+              "2k8R2": "Windows Server 2008 R2",
+              "w7": "Windows 7",
+              "2k8": "Windows Server 2008",
+              "2k3": "Windows Server 2003",
+              "xp": "Windows XP",
+          }
+
+          preferred_order = list(windows_names)
+
+          with info_file.open(encoding="utf-8") as file:
+              data = json.load(file)
+
+          grouped = defaultdict(lambda: defaultdict(set))
+
+          for driver in data.get("drivers", []):
+              if str(driver.get("arch", "")).lower() != "amd64":
+                  continue
+
+              inf_path = str(
+                  driver.get("inf_path", "")
+              ).strip()
+
+              if not inf_path:
+                  continue
+
+              inf = Path(inf_path)
+
+              if not inf.parts:
+                  continue
+
+              component = inf.parts[0].lower()
+
+              # Ignore the separate legacy QEMU FWCfg package.
+              if component == "qemufwcfg":
+                  continue
+
+              # Do not list drivers removed from the minified ISO.
+              if not (iso_root / inf).is_file():
+                  continue
+
+              windows_version = str(
+                  driver.get("windows_version", "")
+              ).strip()
+
+              driver_version = str(
+                  driver.get("driver_version", "")
+              ).strip()
+
+              if not windows_version or not driver_version:
+                  continue
+
+              # Remove the date preceding the actual driver version.
+              if "," in driver_version:
+                  driver_version = driver_version.split(
+                      ",",
+                      1,
+                  )[1].strip()
+
+              component_name = str(
+                  driver.get("name", component)
+              ).strip()
+
+              if not component_name:
+                  component_name = component
+
+              grouped[windows_version][driver_version].add(
+                  component_name
+              )
+
+          windows_order = [
+              version
+              for version in preferred_order
+              if version in grouped
+          ]
+
+          windows_order.extend(
+              sorted(
+                  set(grouped) - set(windows_order),
+                  key=str.casefold,
+              )
+          )
+
+          lines = ["## Changelog", ""]
+
+          if header_match:
+              version = header_match.group("version")
+              date = header_match.group("date")
+              author = header_match.group("author")
+
+              lines.append(f"**{version}** — {date}")
+              lines.append(author)
+          elif header:
+              lines.append(header)
+          else:
+              lines.append(f"**{latest_tag}**")
+
+          if details:
+              lines.append("")
+
+              for detail in details:
+                  lines.append(f"- {detail}")
+
+          lines.extend(["", "## Driver versions"])
+
+          for windows_version in windows_order:
+              versions = grouped[windows_version]
+
+              heading = windows_names.get(
+                  windows_version,
+                  windows_version,
+              )
+
+              lines.extend(["", f"### {heading}", ""])
+
+              for driver_version in sorted(
+                  versions,
+                  reverse=True,
+              ):
+                  components = sorted(
+                      versions[driver_version],
+                      key=str.casefold,
+                  )
+
+                  lines.append(
+                      f"- `{driver_version}` — "
+                      f"{', '.join(components)}"
+                  )
+
+          output_file.write_text(
+              "\n".join(lines).rstrip() + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          cat /tmp/release-notes.md
+
+          delimiter="RELEASE_NOTES_$(date +%s%N)"
+
+          {
+            echo "release_notes<<$delimiter"
+            cat /tmp/release-notes.md
+            echo "$delimiter"
+          } >> "$GITHUB_OUTPUT"
+      -
         name: Deduplicate files
         if: env.exists == 'false'
         id: deduplicate
@@ -242,7 +500,7 @@ jobs:
         if: env.exists == 'false'
         uses: action-pack/github-release@v2
         with:
-          body: " "
+          body: ${{ steps.notes.outputs.release_notes }}
           tag: "v${{ env.latest_tag }}"
           title: "v${{ env.latest_base }}"
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
