@@ -466,6 +466,11 @@ jobs:
             -V "virtio-win-${base}" \
             /tmp/iso
 
+          # Add a stable filename for the latest-release download URL.
+          cp \
+            "/tmp/virtio-win-${base}.iso" \
+            /tmp/virtio-win.iso
+
           # Keep the MSI files in the ISO, but omit them from the archives.
           sudo rm -f /tmp/iso/*.msi
 
@@ -489,6 +494,8 @@ jobs:
             "/tmp/virtio-win-${base}.iso" \
             "/tmp/virtio-win-${base}.tar.gz" \
             "/tmp/virtio-win-${base}.tar.xz"
+
+          chown "$owner" /tmp/virtio-win.iso
       -
         name: Checkout
         if: env.exists == 'false'
@@ -509,7 +516,7 @@ jobs:
         if: env.exists == 'false'
         uses: AButler/upload-release-assets@v4.0
         with:
-          files: '/tmp/virtio-win-${{ env.latest_base }}.*'
+          files: '/tmp/virtio-win*'
           release-tag: "v${{ env.latest_tag }}"
           repo-token: ${{ secrets.REPO_ACCESS_TOKEN }}
       -
