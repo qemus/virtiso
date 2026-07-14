@@ -24,7 +24,7 @@ VirtISO is a slim image of the VirtIO drivers for Windows guests as provided by 
 
 # Download
 
-  You can download the [latest version](https://github.com/qemus/virtiso/releases/download/latest/virtio-win.iso) from the [Releases](https://github.com/qemus/virtiso/releases) page.
+  You can download the [latest version](https://github.com/qemus/virtiso/releases/latest/download/virtio-win.iso) from the [Releases](https://github.com/qemus/virtiso/releases) page.
 
 # Usage 🚀
   
