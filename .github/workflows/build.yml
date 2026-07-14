@@ -104,11 +104,6 @@ jobs:
 
           # Remove bloat.
           sudo rm -f /tmp/iso/winfsp-*
-          sudo rm -rf \
-            /tmp/iso/spice-vdagent \
-            /tmp/iso/qxl-wddm-dod \
-            /tmp/iso/qxl \
-            /tmp/iso/qxldod
 
           # Remove tools for other platforms.
           sudo rm -rf \
