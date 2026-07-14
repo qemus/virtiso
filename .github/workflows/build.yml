@@ -171,6 +171,59 @@ jobs:
           find /tmp/iso -depth -type d -empty -delete
           EOF
       -
+        name: Verify driver folders
+        if: env.exists == 'false'
+        id: verify
+        run: |
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          missing="/tmp/missing-driver-folders.txt"
+          : > "$missing"
+
+          while IFS=: read -r driver versions; do
+            [ -n "$driver" ] || continue
+
+            for version in $versions; do
+              path="/tmp/iso/$driver/$version"
+
+              if [ ! -d "$path" ]; then
+                echo "$driver/$version" >> "$missing"
+              fi
+            done
+          done <<'EOF'
+          Balloon:2k3 xp 2k8 2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          NetKVM:2k3 xp 2k8 2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          fwcfg:w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          pvpanic:2k8 2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          qemufwcfg:2k16 2k19 w10 w11 2k22 2k25
+          qemupciserial:2k8 2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          qxl:2k8R2 w7
+          qxldod:w8 w8.1 2k12 2k12R2 2k16 2k19 w10
+          smbus:2k8 w11 2k22 2k25
+          sriov:w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          viofs:w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          viogpudo:w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          vioinput:2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          viomem:2k16 2k19 w10 w11 2k22 2k25
+          viorng:2k8 2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          vioscsi:2k8 2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          vioserial:2k3 xp 2k8 2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          viosock:2k16 2k19 w10 w11 2k22 2k25
+          viostor:2k3 xp 2k8 2k8R2 w7 w8 w8.1 2k12 2k12R2 2k16 2k19 w10 w11 2k22 2k25
+          EOF
+
+          if [ -s "$missing" ]; then
+            echo "ERROR: Previously available driver folders are missing:" >&2
+            sed 's/^/  - /' "$missing" >&2
+            echo >&2
+            echo "The upstream package may have dropped Windows drivers." >&2
+            echo "Review the missing folders before publishing this release." >&2
+            exit 1
+          fi
+
+          echo "All expected driver folders are present."
+      -
         name: Generate release notes
         if: env.exists == 'false'
         id: notes
