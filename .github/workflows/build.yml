@@ -18,94 +18,219 @@ jobs:
       packages: write
       contents: read
     steps:
-      - 
+      -
         name: Get latest version
         run: |
-          #!/bin/bash
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
           url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/"
-          resp=$(curl -sS $url)
-          latest_tag=$(echo "$resp" | grep -o 'href="[^"]*' | sed -n -e 's/^.*virtio-win-//p' | cut -f1 -d"/")
-          [ -z "$latest_tag" ] && echo "Tag not found!" && exit 1
-          echo "Found tag: \"${latest_tag}\""
-          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
-          base=$(echo "$latest_tag" | cut -f1 -d"-")
-          echo "latest_base=$base" >> $GITHUB_ENV
-      - 
+          resp=$(curl -fsS "$url")
+
+          latest_tag=$(
+            grep -o 'href="[^"]*' <<< "$resp" |
+              sed -n 's|^.*virtio-win-\([^/"]*\)/.*|\1|p' |
+              head -n 1
+          )
+
+          if [ -z "$latest_tag" ]; then
+            echo "ERROR: Tag not found." >&2
+            exit 1
+          fi
+
+          base=${latest_tag%%-*}
+
+          echo "Found tag: \"$latest_tag\""
+
+          {
+            echo "latest_tag=$latest_tag"
+            echo "latest_base=$base"
+          } >> "$GITHUB_ENV"
+      -
         name: Check if the tag exists locally
         uses: action-pack/tag-exists@v1
         id: checkTag
-        with: 
-          tag: 'v${{ env.latest_tag }}'         
+        with:
+          tag: 'v${{ env.latest_tag }}'
       -
         name: Finish when found
         run: |
-          #!/bin/bash
-          if [[ "${{ steps.checkTag.outputs.exists }}" == "true" ]]; then
-            echo "exists=true" >> $GITHUB_ENV
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          if [ "${{ steps.checkTag.outputs.exists }}" = "true" ]; then
+            echo "exists=true" >> "$GITHUB_ENV"
             exit 0
           fi
-          url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}"
-          echo "Checking if ${url} exists.."
-          resp=$(curl -I 2>/dev/null $url | head -1)
-          if echo $resp | grep 404 >/dev/null; then
-           echo "Download $url not found!" && exit 1
-          else
-           echo "exists=false" >> $GITHUB_ENV
+
+          url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}/"
+
+          echo "Checking if $url exists..."
+
+          if ! curl -fsSI "$url" >/dev/null; then
+            echo "ERROR: Download location not found: $url" >&2
+            exit 1
           fi
+
+          echo "exists=false" >> "$GITHUB_ENV"
       -
         name: Download Fedora drivers
         if: env.exists == 'false'
         id: fedora
         run: |
-          #!/bin/bash
-          sudo apt install rdfind genisoimage libarchive-tools symlinks
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          sudo apt-get update
+          sudo apt-get install -y rdfind genisoimage libarchive-tools
+
           url="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-${{ env.latest_tag }}/virtio-win-${{ env.latest_base }}.iso"
+
           echo "Downloading $url"
-          wget "$url" -O "/tmp/latest.iso" -q
-          rm -rf /tmp/iso && mkdir /tmp/iso
-          bsdtar -xf "/tmp/latest.iso" -C /tmp/iso/
+
+          wget "$url" -O /tmp/latest.iso -q
+
+          rm -rf /tmp/iso
+          mkdir -p /tmp/iso
+
+          bsdtar -xf /tmp/latest.iso -C /tmp/iso
       -
-        name:  Strip unnecessary bloat
+        name: Strip unnecessary bloat
         if: env.exists == 'false'
         id: strip
         run: |
-          #!/bin/bash
-          cd /tmp/iso
-          # Remove tools for other platforms
-          sudo rm -rf /tmp/iso/i386
-          sudo rm -rf /tmp/iso/guest-agent
-          sudo rm -f /tmp/iso/virtio-win-gt-x86.msi
-          sudo rm -f /tmp/iso/virtio-win-guest-tools.exe
-          sudo rm -f /tmp/iso/guest-agent/qemu-ga-i386.msi
-          # Remove debug symbols
-          sudo find /tmp/iso -iname "*.pdb" -type f -delete
-          # Remove binaries for other platforms
-          sudo find /tmp/iso -iname "x86" -type d -exec rm -rf {} +
-          sudo find /tmp/iso -iname "arm64" -type d -exec rm -rf {} +
-          # Remove empty directories
-          sudo find . -type d -empty -delete
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          # Remove bloat.
+          sudo rm -f /tmp/iso/winfsp-*
+          sudo rm -rf \
+            /tmp/iso/spice-vdagent \
+            /tmp/iso/qxl-wddm-dod \
+            /tmp/iso/qxl \
+            /tmp/iso/qxldod
+
+          # Remove tools for other platforms.
+          sudo rm -rf \
+            /tmp/iso/i386 \
+            /tmp/iso/tools \
+            /tmp/iso/guest-agent
+
+          sudo rm -f \
+            /tmp/iso/virtio-win-gt-x86.msi \
+            /tmp/iso/virtio-win-guest-tools.exe
+
+          # Remove test and bridge utilities.
+          if [ -d /tmp/iso/viosock ]; then
+            sudo find /tmp/iso/viosock \
+              -type f \
+              \( \
+                -iname 'viosock-test.exe' -o \
+                -iname 'viosocklib-test.exe' -o \
+                -iname 'vstbridge.exe' \
+              \) \
+              -delete
+          fi
+
+          # Remove debug symbols.
+          sudo find /tmp/iso -type f -iname '*.pdb' -delete
+
+          # Remove drivers for other architectures.
+          sudo find /tmp/iso \
+            -type d \
+            \( -iname x86 -o -iname arm64 \) \
+            -prune \
+            -exec rm -rf {} +
+
+          # Replace any symlinks with normal files or directories.
+          sudo bash -Eeuo pipefail <<'EOF'
+          while IFS= read -r -d '' link; do
+            target=$(readlink -f -- "$link")
+
+            if [ -z "$target" ] || [ ! -e "$target" ]; then
+              echo "ERROR: Broken symlink in ISO: $link" >&2
+              exit 1
+            fi
+
+            case "$target" in
+              /tmp/iso/*) ;;
+              *)
+                echo "ERROR: Symlink points outside the ISO tree: $link -> $target" >&2
+                exit 1
+                ;;
+            esac
+
+            replacement="${link}.resolved"
+            rm -rf -- "$replacement"
+
+            if [ -d "$target" ]; then
+              cp -aL -- "$target" "$replacement"
+            else
+              cp -L --preserve=mode,timestamps -- "$link" "$replacement"
+            fi
+
+            rm -rf -- "$link"
+            mv -- "$replacement" "$link"
+          done < <(find /tmp/iso -type l -print0)
+
+          find /tmp/iso -depth -type d -empty -delete
+          EOF
       -
-        name: Create symbolic links
+        name: Deduplicate files
         if: env.exists == 'false'
-        id: symlinks
+        id: deduplicate
         run: |
-          #!/bin/bash
-          sudo rdfind -removeidentinode false -makehardlinks true /tmp/iso/
-          symlinks -orc /tmp/iso
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          sudo rdfind \
+            -outputname /dev/null \
+            -removeidentinode false \
+            -makehardlinks true \
+            /tmp/iso
       -
         name: Build minified ISO
         if: env.exists == 'false'
         id: build
         run: |
-          #!/bin/bash
-          cd /tmp/iso
-          genisoimage -o /tmp/virtio-win-${{ env.latest_base }}.iso -r -iso-level 4 -input-charset iso8859-1 -V "virtio-win-${{ env.latest_base }}" /tmp/iso
-          sudo rm /tmp/iso/*.msi
-          #sudo rm /tmp/iso/*.exe          
-          echo & echo
-          tar -C /tmp/iso -cvzf /tmp/virtio-win-${{ env.latest_base }}.tar.gz * >/dev/null
-          echo & echo
-          XZ_OPT=-9 tar -C /tmp/iso -Jcvf /tmp/virtio-win-${{ env.latest_base }}.tar.xz * >/dev/null         
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          base="${{ env.latest_base }}"
+          owner="$(id -u):$(id -g)"
+
+          sudo genisoimage \
+            -o "/tmp/virtio-win-${base}.iso" \
+            -r \
+            -iso-level 4 \
+            -input-charset iso8859-1 \
+            -cache-inodes \
+            -V "virtio-win-${base}" \
+            /tmp/iso
+
+          # Keep the MSI files in the ISO, but omit them from the archives.
+          sudo rm -f /tmp/iso/*.msi
+
+          sudo tar \
+            --owner=0 \
+            --group=0 \
+            --numeric-owner \
+            -C /tmp/iso \
+            -czf "/tmp/virtio-win-${base}.tar.gz" \
+            .
+
+          sudo env XZ_OPT=-9 tar \
+            --owner=0 \
+            --group=0 \
+            --numeric-owner \
+            -C /tmp/iso \
+            -cJf "/tmp/virtio-win-${base}.tar.xz" \
+            .
+
+          sudo chown "$owner" \
+            "/tmp/virtio-win-${base}.iso" \
+            "/tmp/virtio-win-${base}.tar.gz" \
+            "/tmp/virtio-win-${base}.tar.xz"
       -
         name: Checkout
         if: env.exists == 'false'
@@ -130,15 +255,15 @@ jobs:
           release-tag: "v${{ env.latest_tag }}"
           repo-token: ${{ secrets.REPO_ACCESS_TOKEN }}
       -
-       name: Send mail
-       if: env.exists == 'false'
-       uses: action-pack/send-mail@v1
-       with:
-         to: ${{secrets.MAILTO}}
-         from: Github Actions <${{secrets.MAILTO}}>
-         connection_url: ${{secrets.MAIL_CONNECTION}}
-         subject: Build of ${{ github.event.repository.name }} v${{ env.latest_tag }} completed
-         body: |
-              The build job of ${{ github.event.repository.name }} v${{ env.latest_tag }} was completed successfully! 
-              
-              See https://github.com/${{ github.repository }}/actions for more information.
+        name: Send mail
+        if: env.exists == 'false'
+        uses: action-pack/send-mail@v1
+        with:
+          to: ${{ secrets.MAILTO }}
+          from: Github Actions <${{ secrets.MAILTO }}>
+          connection_url: ${{ secrets.MAIL_CONNECTION }}
+          subject: Build of ${{ github.event.repository.name }} v${{ env.latest_tag }} completed
+          body: |
+            The build job of ${{ github.event.repository.name }} v${{ env.latest_tag }} was completed successfully!
+
+            See https://github.com/${{ github.repository }}/actions for more information.
